@@ -24,7 +24,7 @@ export class GameScene extends Scene {
     #levelLabel
     #player
     #cameraMinX = 640
-    #cameraMaxX = 4300
+    #cameraMaxX = 4580 // Camera mag verder naar rechts, zodat de exit van level 1 zichtbaar blijft.
     #cameraY = 360
 
     onInitialize(engine) {
