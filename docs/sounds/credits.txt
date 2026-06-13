@@ -1,0 +1,10 @@
+Audio credits:
+- Background music: Zombie road trip - Retro
+- Jump sound: action_jump
+- Coin sound: Retro coin 4 by Driken5482
+- Hit sound: Retro laser 1 by Driken5482
+- Enemy death sound: death-splat
+- Level complete sound: Freesound Community level completed
+- Game over sound: Freesound Community 8-bit "Game Over"
+
+Check and keep the source/license information from the websites where you downloaded the sounds.
