@@ -22,6 +22,10 @@ export class GameScene extends Scene {
     #highscoreLabel
     #livesLabel
     #levelLabel
+    #player
+    #cameraMinX = 640
+    #cameraMaxX = 4300
+    #cameraY = 360
 
     onInitialize(engine) {
         // Beginwaarden voor level 1.
@@ -32,12 +36,15 @@ export class GameScene extends Scene {
         // Achtergrond staat vast op het scherm, zodat hij niet trilt met de camera.
         this.add(new Background(Resources.BackgroundCity, 1.35))
 
-        // Speler toevoegen en camera op de speler locken.
-        const player = new Player()
-        this.add(player)
+        // Speler toevoegen.
+        // We bewaren de speler zodat de camera hem rustig horizontaal kan volgen.
+        this.#player = new Player()
+        this.add(this.#player)
 
-        this.camera.strategy.lockToActor(player)
+        // Niet lockToActor gebruiken, want die volgt ook elke kleine y-beweging bij springen.
+        // Dat kan trillen geven. Daarom volgt de camera alleen horizontaal.
         this.camera.zoom = 1
+        this.camera.pos = new Vector(this.#cameraMinX, this.#cameraY)
 
         // =====================================================
         // LOGISCHE LEVEL FLOW
@@ -141,6 +148,21 @@ export class GameScene extends Scene {
             coordPlane: CoordPlane.Screen
         })
         this.add(this.#levelLabel)
+    }
+
+    onPostUpdate() {
+        // Camera volgt de speler alleen op de x-as.
+        // Math.round voorkomt subpixel-trilling in de camera.
+        if (!this.#player) {
+            return
+        }
+
+        const targetX = Math.min(
+            Math.max(this.#player.pos.x, this.#cameraMinX),
+            this.#cameraMaxX
+        )
+
+        this.camera.pos = new Vector(Math.round(targetX), this.#cameraY)
     }
 
     addScore(points) {

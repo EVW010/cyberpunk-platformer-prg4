@@ -22,6 +22,10 @@ export class Level2Scene extends Scene {
     #highscoreLabel
     #livesLabel
     #levelLabel
+    #player
+    #cameraMinX = 640
+    #cameraMaxX = 4800
+    #cameraY = 360
 
     onInitialize(engine) {
         // Beginwaarden voor level 2.
@@ -32,12 +36,13 @@ export class Level2Scene extends Scene {
         // Zelfde cyberpunk achtergrond als level 1.
         this.add(new Background(Resources.BackgroundCity, 1.35))
 
-        const player = new Player()
-        this.add(player)
+        this.#player = new Player()
+        this.add(this.#player)
 
-        // Camera volgt de speler door het brede level.
-        this.camera.strategy.lockToActor(player)
+        // De camera volgt alleen horizontaal.
+        // Zo blijft springen rustiger en trilt het beeld minder.
         this.camera.zoom = 1
+        this.camera.pos = new Vector(this.#cameraMinX, this.#cameraY)
 
         // =====================================================
         // LEVEL 2: moeilijker level met meer enemies en lasers
@@ -139,6 +144,21 @@ export class Level2Scene extends Scene {
             coordPlane: CoordPlane.Screen
         })
         this.add(this.#levelLabel)
+    }
+
+    onPostUpdate() {
+        // Camera volgt de speler alleen op de x-as.
+        // Math.round voorkomt subpixel-trilling in de camera.
+        if (!this.#player) {
+            return
+        }
+
+        const targetX = Math.min(
+            Math.max(this.#player.pos.x, this.#cameraMinX),
+            this.#cameraMaxX
+        )
+
+        this.camera.pos = new Vector(Math.round(targetX), this.#cameraY)
     }
 
     addScore(points) {

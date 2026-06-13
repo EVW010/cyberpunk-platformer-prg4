@@ -18,6 +18,8 @@ export class Enemy extends Actor {
     #facingLeft = false
     #visual
     #isDead = false
+    #direction = 1
+    #startY
 
     #visualScale = 1.55
 
@@ -30,13 +32,17 @@ export class Enemy extends Actor {
             width: 30,
             height: 48,
 
-            collisionType: CollisionType.Active,
+            // Passive zorgt dat de enemy wel collisions detecteert,
+            // maar niet door de physics solver wordt weggeduwd.
+            // Daardoor stopt hij niet meer soms na contact met de speler.
+            collisionType: CollisionType.Passive,
             z: 45
         })
 
         // Deze grenzen bepalen waar de enemy moet omdraaien.
         this.#leftLimit = leftLimit
         this.#rightLimit = rightLimit
+        this.#startY = y
     }
 
     onInitialize(engine) {
@@ -71,6 +77,7 @@ export class Enemy extends Actor {
         engine.currentScene.add(this.#visual)
 
         // Enemy begint naar rechts te lopen.
+        this.#direction = 1
         this.vel.x = this.#speed
         this.#syncVisual()
 
@@ -103,16 +110,26 @@ export class Enemy extends Actor {
 
         // Omdraaien bij de linkergrens.
         if (this.pos.x <= this.#leftLimit) {
-            this.vel.x = this.#speed
+            this.#direction = 1
             this.#facingLeft = false
         }
 
         // Omdraaien bij de rechtergrens.
         if (this.pos.x >= this.#rightLimit) {
-            this.vel.x = -this.#speed
+            this.#direction = -1
             this.#facingLeft = true
         }
 
+        // De snelheid wordt elke frame opnieuw gezet.
+        // Als de speler de enemy raakt, kan physics de snelheid soms op 0 zetten.
+        // Dit voorkomt dat de enemy daarna stil blijft staan.
+        this.vel.x = this.#direction * this.#speed
+        this.vel.y = 0
+        this.pos.y = this.#startY
+    }
+
+    onPostUpdate() {
+        // Net als bij de speler syncen we de losse sprite na de movement update.
         this.#syncVisual()
     }
 

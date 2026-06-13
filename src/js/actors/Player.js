@@ -168,12 +168,19 @@ export class Player extends Actor {
             this.#setAnimation("jump")
         }
 
-        this.#syncVisual()
+        // De visual wordt in onPostUpdate gesynchroniseerd.
+        // Daardoor loopt de sprite niet één physics-frame achter en trilt hij minder tijdens springen.
 
         // Als de speler uit de wereld valt, is het game over.
         if (this.pos.y > 900) {
             engine.goToScene("gameover")
         }
+    }
+
+    onPostUpdate() {
+        // Na de physics update staat de speler op zijn definitieve positie.
+        // Hier syncen voorkomt een kleine trilling/vertraging van de losse sprite.
+        this.#syncVisual()
     }
 
     #setAnimation(name) {
