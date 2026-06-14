@@ -1,7 +1,7 @@
 {
-  "name": "startproject",
+  "name": "Eindprojectt",
   "version": "0.0.1",
-  "author":"CMGT",
+  "author":"Eren",
   "type": "module",
   "scripts": {
     "dev": "vite",
